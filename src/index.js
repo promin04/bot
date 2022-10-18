@@ -8,26 +8,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const puppeteer = require("puppeteer");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
+const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 const username = "ufuu11a64138";
 const password = "GGTmdf209";
+const isHeadless = false;
 const usernameInputEl = "#txtUserName";
 const passwordInputEl = "#password";
 const loginEl = "#btnLogin";
-const agreeBtnEl = "#btnAgree_F";
+const agreeBtnEl = isHeadless ? "#btnAgree_F" : "#btnAgree";
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    const browser = yield puppeteer.launch({ headless: false });
+    const browser = yield puppeteer_extra_1.default
+        .use((0, puppeteer_extra_plugin_stealth_1.default)())
+        .launch({ headless: isHeadless });
     const page = yield browser.newPage();
-    yield page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36");
+    page.on("response", (event) => __awaiter(void 0, void 0, void 0, function* () {
+        const [mainUrl, queryString] = event.url().split("?");
+        if (mainUrl === "https://ufabet.com/_View/RMOdds1Gen.ashx") {
+            console.log("event", event.url());
+            try {
+                const rawText = yield event.text();
+                console.log("rawText", rawText);
+            }
+            catch (error) {
+                // console.log("error", error);
+            }
+        }
+        // console.log("event.json()",  await event?.json());
+        // console.log("event.buffer()",  event.buffer());
+    }));
     yield page.goto("https://ufabet.com/");
     yield page.waitForSelector(usernameInputEl);
     yield page.focus(usernameInputEl);
-    yield page.keyboard.type(username, { delay: Math.random() * 1000 });
+    yield page.keyboard.type(username);
     yield page.focus(passwordInputEl);
-    yield page.keyboard.type(password, { delay: Math.random() * 1000 });
+    yield page.keyboard.type(password);
     yield page.click(loginEl);
-    // agree page
+    // // agree page
     yield page.waitForSelector(agreeBtnEl);
     yield page.click(agreeBtnEl);
+    yield page.waitForTimeout(1000);
+    yield page.goto("https://ufabet.com/_View/RMOdds2.aspx?ot=t");
 }))();
 //# sourceMappingURL=index.js.map
